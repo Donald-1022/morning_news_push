@@ -1,0 +1,30 @@
+name: 每日早报立即推送
+
+on:
+  workflow_dispatch:  # 手动触发支持，不定时运行
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v3
+
+      - name: 安装 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt || true
+
+      - name: 开始推送
+        env:
+          wpush_apikey: ${{ secrets.WPUSH_APIKEY }}
+          alapi_token: ${{ secrets.ALAPI_TOKEN }}
+          type: ${{ secrets.TYPE }}
+          channel: ${{ secrets.CHANNEL }}
+        run: |
+          python main.py
