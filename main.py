@@ -1,20 +1,20 @@
+import os
 import requests
 
-# ✅ 直接写入你的 Token
-ALAPI_TOKEN = "t7lmeyheeicjmwzqrodpefu2m72aly"  # 替换为你的实际 token
-WPUSH_APIKEY = "WPUSHvR76iq827D8jDRw5N7wVMWrruj9"  # 替换为你的实际 apikey
-CHANNEL = "wechat"  # 可选：wechat, sms, mail, feishu 等
-SEND_TYPE = "image"  # 可选：image 或 text
+# ✅ 从 GitHub Secrets 获取环境变量
+ALAPI_TOKEN = os.getenv('ALAPI_TOKEN')
+WPUSH_APIKEY = os.getenv('WPUSH_APIKEY')
+CHANNEL = os.getenv('CHANNEL', 'wechat')
+SEND_TYPE = os.getenv('TYPE', 'image')
 
 # 获取早报信息
 def get_news():
-    alapi_token = os.getenv('ALAPI_TOKEN')
-    if not alapi_token:
+    if not ALAPI_TOKEN:
         print("❌ ALAPI_TOKEN 没有正确设置！")
         return None
 
     url = 'https://v2.alapi.cn/api/zaobao'
-    params = {'token': alapi_token}
+    params = {'token': ALAPI_TOKEN}
     response = requests.get(url, params=params)
 
     print("🔍 状态码：", response.status_code)
@@ -34,6 +34,10 @@ def get_news():
 
 # 推送消息
 def push_message(title, content):
+    if not WPUSH_APIKEY:
+        print("❌ WPUSH_APIKEY 没有设置！")
+        return False
+
     url = 'https://api.wpush.cn/api/v1/send'
     params = {
         'apikey': WPUSH_APIKEY,
@@ -50,15 +54,14 @@ def push_message(title, content):
         print(f"推送失败：{data.get('message')}")
         return False
 
-
 # 主函数
 def main():
     if not ALAPI_TOKEN or not WPUSH_APIKEY:
-        print('请填写 ALAPI_TOKEN 和 WPUSH_APIKEY！')
+        print('❌ 请设置 ALAPI_TOKEN 和 WPUSH_APIKEY 环境变量！')
         return
 
     if SEND_TYPE not in ["image", "text"]:
-        print("SEND_TYPE 参数错误，已默认设置为 image")
+        print("⚠️ SEND_TYPE 参数错误，已默认设置为 image")
         send_type = "image"
     else:
         send_type = SEND_TYPE
