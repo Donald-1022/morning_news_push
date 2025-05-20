@@ -20,11 +20,11 @@ jobs:
         run: |
           pip install -r requirements.txt || true
 
-      - name: 开始推送
+      - name: 执行推送脚本
         env:
-          wpush_apikey: ${{ secrets.WPUSH_APIKEY }}
-          alapi_token: ${{ secrets.ALAPI_TOKEN }}
-          type: ${{ secrets.TYPE }}
-          channel: ${{ secrets.CHANNEL }}
+          ALAPI_TOKEN: ${{ secrets.ALAPI_TOKEN }}
+          WPUSH_APIKEY: ${{ secrets.WPUSH_APIKEY }}
+          TYPE: ${{ secrets.TYPE }}
+          CHANNEL: ${{ secrets.CHANNEL }}
         run: |
           python main.py
