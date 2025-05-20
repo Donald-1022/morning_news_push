@@ -8,14 +8,28 @@ SEND_TYPE = "image"  # 可选：image 或 text
 
 # 获取早报信息
 def get_news():
+    alapi_token = os.getenv('ALAPI_TOKEN')
+    if not alapi_token:
+        print("❌ ALAPI_TOKEN 没有正确设置！")
+        return None
+
     url = 'https://v2.alapi.cn/api/zaobao'
-    params = {'token': ALAPI_TOKEN}
+    params = {'token': alapi_token}
     response = requests.get(url, params=params)
-    data = response.json()
+
+    print("🔍 状态码：", response.status_code)
+    print("🔍 响应前100字：", response.text[:100])  # 避免长输出
+
+    try:
+        data = response.json()
+    except Exception as e:
+        print("❌ JSON 解析失败：", e)
+        return None
+
     if data.get('code') == 200:
         return data.get('data')
     else:
-        print(f"获取早报失败：{data.get('msg')}")
+        print(f"❌ 获取早报失败：{data.get('msg')}")
         return None
 
 # 推送消息
@@ -35,6 +49,7 @@ def push_message(title, content):
     else:
         print(f"推送失败：{data.get('message')}")
         return False
+
 
 # 主函数
 def main():
