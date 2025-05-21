@@ -13,7 +13,7 @@ def get_news():
         print("❌ ALAPI_TOKEN 没有正确设置！")
         return None
 
-    url = 'https://v2.alapi.cn/api/zaobao'
+    url = 'https://v3.alapi.cn/api/zaobao'
     params = {'token': ALAPI_TOKEN}
     response = requests.get(url, params=params)
 
